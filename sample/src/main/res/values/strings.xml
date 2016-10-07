@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">DrawingLibrarySample</string>
+    <string name="hint_add_some_text">Add some text</string>
+</resources>

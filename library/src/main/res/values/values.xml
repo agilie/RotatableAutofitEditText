@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="color_picker_padding">22dp</dimen>
+    <dimen name="edittext_text_corner_radius">20dp</dimen>
+    <color name="white_transparent_50">#80FFFFFF</color>
+
+</resources>
