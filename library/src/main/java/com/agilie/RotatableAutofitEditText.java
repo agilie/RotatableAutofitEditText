@@ -134,196 +134,6 @@ public class RotatableAutofitEditText extends EditText {
         }
     }
 
-    /**
-     * Sets the typeface in which the text should be displayed
-     */
-    @Override
-    public void setTypeface(final Typeface tf) {
-        if (paint == null)
-            paint = new TextPaint(getPaint());
-        paint.setTypeface(tf);
-        super.setTypeface(tf);
-    }
-
-    public void setMinTextSize(float minTextSize) {
-        this.minTextSize = minTextSize;
-        adjustTextSize();
-    }
-
-    public void setMaxTextSize(float maxTextSize) {
-        this.maxTextSize = maxTextSize;
-        adjustTextSize();
-    }
-
-//    public void setMinWidth(int minWidth) {
-//        this.minWidth = minWidth;
-//        adjustTextSize();
-//    }
-
-    /**
-     * Resize text on
-     */
-    private void adjustTextSize() {
-        final int startSize = (int) minTextSize;
-        final int heightLimit = getMeasuredHeight()
-                - getCompoundPaddingBottom() - getCompoundPaddingTop();
-        maxWidth = getMeasuredWidth() - getCompoundPaddingLeft()
-                - getCompoundPaddingRight();
-        if (maxWidth <= 0)
-            return;
-
-        if (emojiMode && onAdjustEmojiSizeListener != null) {
-            onAdjustEmojiSizeListener.onAdjustEmojiSize(getText(), getLayoutParams().width - getPaddingRight() - getPaddingLeft());
-        }
-
-        super.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                efficientTextSizeSearch(startSize, (int) maxTextSize,
-                        sizeTester, new RectF(0, 0, maxWidth, heightLimit)));
-
-    }
-
-    private int efficientTextSizeSearch(final int start, final int end,
-                                        final SizeTester sizeTester, final RectF availableSpace) {
-        String text;
-        if (!TextUtils.isEmpty(getHint())) {
-            text = getHint().toString();
-        } else {
-            text = getText().toString();
-        }
-
-        final int key = text.length();
-        int size = textCachedSizes.get(key);
-        if (size != 0)
-            return size;
-        size = binarySearch(start, end, sizeTester, availableSpace);
-        textCachedSizes.put(key, size);
-        return size;
-    }
-
-    private int binarySearch(final int start, final int end, final SizeTester sizeTester, final RectF availableSpace) {
-        int lastBest = start;
-        int low = start;
-        int high = end - 1;
-        int middle;
-        while (low <= high) {
-            middle = low + high >>> 1;
-            final int midValCmp = sizeTester.onTestSize(middle, availableSpace);
-            if (midValCmp < 0) {
-                lastBest = low;
-                low = middle + 1;
-            } else if (midValCmp > 0) {
-                high = middle - 1;
-                lastBest = high;
-            } else
-                return middle;
-        }
-        return lastBest;
-    }
-
-    @Override
-    protected void onTextChanged(final CharSequence text, final int start, final int before, final int after) {
-        super.onTextChanged(text, start, before, after);
-        adjustTextSize();
-    }
-
-    @Override
-    protected void onSizeChanged(final int width, final int height, final int oldwidth, final int oldheight) {
-        textCachedSizes.clear();
-        super.onSizeChanged(width, height, oldwidth, oldheight);
-        if (width != oldwidth || height != oldheight)
-            adjustTextSize();
-    }
-
-    /**
-     * This method sets TextView#Editor#mInsertionControllerEnabled field to false
-     * to return false from the Editor#hasInsertionController() method to PREVENT showing
-     * of the insertionController from EditText
-     * The Editor#hasInsertionController() method is called in  Editor#onTouchUpEvent(MotionEvent event) method.
-     */
-    private void setInsertionDisabled() {
-        try {
-            Field editorField = TextView.class.getDeclaredField("mEditor");
-            editorField.setAccessible(true);
-            Object editorObject = editorField.get(this);
-
-            Class editorClass = Class.forName("android.widget.Editor");
-            Field mInsertionControllerEnabledField = editorClass.getDeclaredField("mInsertionControllerEnabled");
-            mInsertionControllerEnabledField.setAccessible(true);
-            mInsertionControllerEnabledField.set(editorObject, false);
-        } catch (Exception ignored) {
-            // ignore exception here
-        }
-    }
-
-    /**
-     * Adds TextWatcher if EditText has hint
-     */
-    private void addSelfRemovableTextWatcher() {
-        addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //empty
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                removeTextChangedListener(this);
-                setHint(null);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //empty
-            }
-        });
-    }
-
-    /**
-     * Performs changes on pinch
-     */
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            scaleFactor *= detector.getScaleFactor();
-
-            scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 2.0f));
-
-            if (!moveMode) {
-                float x = getTranslationX();
-                float y = getTranslationY();
-
-                int newWidth = (int) (startWidth * scaleFactor);
-                if (newWidth > getMinimumWidth() && newWidth < ((View) getParent()).getWidth()) {
-                    ViewGroup.LayoutParams params = getLayoutParams();
-                    params.width = newWidth;
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    setLayoutParams(params);
-                }
-                setTranslationX(x);
-                setTranslationY(y);
-
-                invalidate();
-            }
-
-            return true;
-        }
-    }
-
-    /**
-     * Performs changes on rotation
-     */
-    private class RotateListener extends RotateGestureDetector.SimpleOnRotateGestureListener {
-
-        @Override
-        public boolean onRotate(RotateGestureDetector detector) {
-            if (!moveMode) {
-                setRotation(getRotation() - detector.getRotationDegreesDelta());
-            }
-            return false;
-        }
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         setInsertionDisabled();
@@ -401,6 +211,176 @@ public class RotatableAutofitEditText extends EditText {
     }
 
     /**
+     * Performs changes on pinch
+     */
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            scaleFactor *= detector.getScaleFactor();
+
+            scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 2.0f));
+
+            if (!moveMode) {
+                float x = getTranslationX();
+                float y = getTranslationY();
+
+                int newWidth = (int) (startWidth * scaleFactor);
+                if (newWidth > getMinimumWidth() && newWidth < ((View) getParent()).getWidth()) {
+                    ViewGroup.LayoutParams params = getLayoutParams();
+                    params.width = newWidth;
+                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    setLayoutParams(params);
+                }
+                setTranslationX(x);
+                setTranslationY(y);
+
+                invalidate();
+            }
+
+            return true;
+        }
+    }
+
+    /**
+     * Performs changes on rotation
+     */
+    private class RotateListener extends RotateGestureDetector.SimpleOnRotateGestureListener {
+
+        @Override
+        public boolean onRotate(RotateGestureDetector detector) {
+            if (!moveMode) {
+                setRotation(getRotation() - detector.getRotationDegreesDelta());
+            }
+            return false;
+        }
+    }
+
+    @Override
+    protected void onTextChanged(final CharSequence text, final int start, final int before, final int after) {
+        super.onTextChanged(text, start, before, after);
+        adjustTextSize();
+    }
+
+    @Override
+    protected void onSizeChanged(final int width, final int height, final int oldwidth, final int oldheight) {
+        textCachedSizes.clear();
+        super.onSizeChanged(width, height, oldwidth, oldheight);
+        if (width != oldwidth || height != oldheight)
+            adjustTextSize();
+    }
+
+    /**
+     * Resizes text on layout changes
+     */
+    private void adjustTextSize() {
+        final int startSize = (int) minTextSize;
+        final int heightLimit = getMeasuredHeight()
+                - getCompoundPaddingBottom() - getCompoundPaddingTop();
+        maxWidth = getMeasuredWidth() - getCompoundPaddingLeft()
+                - getCompoundPaddingRight();
+        if (maxWidth <= 0)
+            return;
+
+        if (emojiMode && onAdjustEmojiSizeListener != null) {
+            onAdjustEmojiSizeListener.onAdjustEmojiSize(getText(), getLayoutParams().width - getPaddingRight() - getPaddingLeft());
+        }
+
+        super.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                efficientTextSizeSearch(startSize, (int) maxTextSize,
+                        sizeTester, new RectF(0, 0, maxWidth, heightLimit)));
+
+    }
+
+    /**
+     * Gets cached text size from list of previously stored sizes
+     */
+    private int efficientTextSizeSearch(final int start, final int end,
+                                        final SizeTester sizeTester, final RectF availableSpace) {
+        String text;
+        if (!TextUtils.isEmpty(getHint())) {
+            text = getHint().toString();
+        } else {
+            text = getText().toString();
+        }
+
+        final int key = text.length();
+        int size = textCachedSizes.get(key);
+        if (size != 0)
+            return size;
+        size = binarySearch(start, end, sizeTester, availableSpace);
+        textCachedSizes.put(key, size);
+        return size;
+    }
+
+    /**
+     *  Calculates best text size for current EditText size
+     */
+    private int binarySearch(final int start, final int end, final SizeTester sizeTester, final RectF availableSpace) {
+        int lastBest = start;
+        int low = start;
+        int high = end - 1;
+        int middle;
+        while (low <= high) {
+            middle = low + high >>> 1;
+            final int midValCmp = sizeTester.onTestSize(middle, availableSpace);
+            if (midValCmp < 0) {
+                lastBest = low;
+                low = middle + 1;
+            } else if (midValCmp > 0) {
+                high = middle - 1;
+                lastBest = high;
+            } else
+                return middle;
+        }
+        return lastBest;
+    }
+
+    /**
+     * This method sets TextView#Editor#mInsertionControllerEnabled field to false
+     * to return false from the Editor#hasInsertionController() method to PREVENT showing
+     * of the insertionController from EditText
+     * The Editor#hasInsertionController() method is called in  Editor#onTouchUpEvent(MotionEvent event) method.
+     */
+    private void setInsertionDisabled() {
+        try {
+            Field editorField = TextView.class.getDeclaredField("mEditor");
+            editorField.setAccessible(true);
+            Object editorObject = editorField.get(this);
+
+            Class editorClass = Class.forName("android.widget.Editor");
+            Field mInsertionControllerEnabledField = editorClass.getDeclaredField("mInsertionControllerEnabled");
+            mInsertionControllerEnabledField.setAccessible(true);
+            mInsertionControllerEnabledField.set(editorObject, false);
+        } catch (Exception ignored) {
+            // ignore exception here
+        }
+    }
+
+    /**
+     * Adds TextWatcher if EditText has hint
+     */
+    private void addSelfRemovableTextWatcher() {
+        addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //empty
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                removeTextChangedListener(this);
+                setHint(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //empty
+            }
+        });
+    }
+
+    /**
      * Check if current EditText is within parent container
      */
     private boolean isInBounds(float translationX, float translationY) {
@@ -427,6 +407,10 @@ public class RotatableAutofitEditText extends EditText {
         }
     }
 
+    /**
+     * Check if current EditText can move up and down
+     * when it reached the horizontal limits of parent view
+     */
     private boolean canMoveVertically(float translationY) {
         if (getParent() == null) return true;
         View parent = (View) getParent();
@@ -441,6 +425,10 @@ public class RotatableAutofitEditText extends EditText {
         }
     }
 
+    /**
+     * Check if current EditText can move left and right
+     * when it reached the vertical limits of parent view
+     */
     private boolean canMoveHorizontally(float translationX) {
         if (getParent() == null) return true;
         View parent = (View) getParent();
@@ -455,16 +443,31 @@ public class RotatableAutofitEditText extends EditText {
         }
     }
 
-    public void setEmojiMode(boolean emojiMode) {
-        this.emojiMode = emojiMode;
+    /**
+     * Sets the typeface in which the text should be displayed
+     */
+    @Override
+    public void setTypeface(final Typeface tf) {
+        if (paint == null)
+            paint = new TextPaint(getPaint());
+        paint.setTypeface(tf);
+        super.setTypeface(tf);
     }
 
-    public boolean isEmojiMode() {
-        return emojiMode;
+    /**
+     * Sets minimal text size
+     */
+    public void setMinTextSize(float minTextSize) {
+        this.minTextSize = minTextSize;
+        adjustTextSize();
     }
 
-    public boolean isMoving() {
-        return isMoving;
+    /**
+     * Sets maximal text size
+     */
+    public void setMaxTextSize(float maxTextSize) {
+        this.maxTextSize = maxTextSize;
+        adjustTextSize();
     }
 
     /**
@@ -506,6 +509,14 @@ public class RotatableAutofitEditText extends EditText {
 
     public void setOnAdjustEmojiSizeListener(OnAdjustEmojiSizeListener onAdjustEmojiSizeListener) {
         this.onAdjustEmojiSizeListener = onAdjustEmojiSizeListener;
+    }
+
+    public void setEmojiMode(boolean emojiMode) {
+        this.emojiMode = emojiMode;
+    }
+
+    public boolean isEmojiMode() {
+        return emojiMode;
     }
 
 }
