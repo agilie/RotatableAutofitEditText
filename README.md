@@ -6,6 +6,10 @@ Extended EditText which allows to move, rotate and resize text at the same time
 
     Coming soon
 
+## Requirements
+
+Android 2.3+ (API level 9+)
+
 ## Author
 
 Agilie info@agilie.com
