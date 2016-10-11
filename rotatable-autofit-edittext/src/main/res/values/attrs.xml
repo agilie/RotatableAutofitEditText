@@ -3,7 +3,12 @@
 
     <declare-styleable name="RotatableAutofitEditText">
         <attr name="minTextSize" format="float" />
+        <attr name="maxTextSize" format="float" />
         <attr name="minWidth" format="dimension" />
+        <attr name="clipBounds" format="boolean" />
+        <attr name="rotatable" format="boolean" />
+        <attr name="resizable" format="boolean" />
+        <attr name="movable" format="boolean" />
     </declare-styleable>
 
 </resources>

@@ -7,6 +7,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.Spannable;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -60,6 +61,11 @@ public class RotatableAutofitEditText extends EditText {
     private boolean emojiMode = false;
     private boolean isHorizontal = true;
 
+    private boolean shouldClipBounds;
+    private boolean shouldRotate;
+    private boolean shouldTranslate;
+    private boolean shouldResize;
+
     private interface SizeTester {
         /**
          * AutoResizeEditText
@@ -88,11 +94,14 @@ public class RotatableAutofitEditText extends EditText {
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RotatableAutofitEditText);
         if (a != null) {
             minTextSize = a.getDimension(R.styleable.RotatableAutofitEditText_minTextSize, DEFAULT_MIN_TEXT_SIZE);
+            maxTextSize = a.getDimension(R.styleable.RotatableAutofitEditText_maxTextSize, getTextSize());
             setMinimumWidth(a.getDimensionPixelOffset(R.styleable.RotatableAutofitEditText_minWidth, DEFAULT_MIN_WIDTH));
+            shouldClipBounds = a.getBoolean(R.styleable.RotatableAutofitEditText_clipBounds, true);
+            shouldRotate = a.getBoolean(R.styleable.RotatableAutofitEditText_rotatable, true);
+            shouldResize = a.getBoolean(R.styleable.RotatableAutofitEditText_resizable, true);
+            shouldTranslate = a.getBoolean(R.styleable.RotatableAutofitEditText_movable, true);
             a.recycle();
         }
-
-        maxTextSize = getTextSize();
 
         sizeTester = new SizeTester() {
             final RectF textRect = new RectF();
@@ -118,6 +127,10 @@ public class RotatableAutofitEditText extends EditText {
                 else return 1;
             }
         };
+
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
         addSelfRemovableTextWatcher();
         setDrawingCacheEnabled(true);
@@ -169,7 +182,8 @@ public class RotatableAutofitEditText extends EditText {
             case MotionEvent.ACTION_MOVE:
                 float translationX = pointX - deltaX;
                 float translationY = pointY - deltaY;
-                if (moveMode) {
+                if (moveMode && shouldTranslate) {
+
                     if (isInBounds(translationX, translationY)) {
                         setTranslationX(translationX);
                         setTranslationY(translationY);
@@ -217,6 +231,8 @@ public class RotatableAutofitEditText extends EditText {
 
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
+            if (!shouldResize) return true;
+
             scaleFactor *= detector.getScaleFactor();
 
             scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 2.0f));
@@ -249,7 +265,7 @@ public class RotatableAutofitEditText extends EditText {
 
         @Override
         public boolean onRotate(RotateGestureDetector detector) {
-            if (!moveMode) {
+            if (!moveMode && shouldRotate) {
                 setRotation(getRotation() - detector.getRotationDegreesDelta());
             }
             return false;
@@ -384,7 +400,8 @@ public class RotatableAutofitEditText extends EditText {
      * Check if current EditText is within parent container
      */
     private boolean isInBounds(float translationX, float translationY) {
-        if (getParent() == null) return true;
+        if (getParent() == null || !shouldClipBounds) return true;
+
         View parent = (View) getParent();
 
         float degreeRemain = getRotation() % 360;
@@ -444,33 +461,6 @@ public class RotatableAutofitEditText extends EditText {
     }
 
     /**
-     * Sets the typeface in which the text should be displayed
-     */
-    @Override
-    public void setTypeface(final Typeface tf) {
-        if (paint == null)
-            paint = new TextPaint(getPaint());
-        paint.setTypeface(tf);
-        super.setTypeface(tf);
-    }
-
-    /**
-     * Sets minimal text size
-     */
-    public void setMinTextSize(float minTextSize) {
-        this.minTextSize = minTextSize;
-        adjustTextSize();
-    }
-
-    /**
-     * Sets maximal text size
-     */
-    public void setMaxTextSize(float maxTextSize) {
-        this.maxTextSize = maxTextSize;
-        adjustTextSize();
-    }
-
-    /**
      * OnMoveListener
      */
     public interface OnMoveListener {
@@ -511,6 +501,8 @@ public class RotatableAutofitEditText extends EditText {
         this.onAdjustEmojiSizeListener = onAdjustEmojiSizeListener;
     }
 
+    /* Getters & Setters */
+
     public void setEmojiMode(boolean emojiMode) {
         this.emojiMode = emojiMode;
     }
@@ -519,4 +511,56 @@ public class RotatableAutofitEditText extends EditText {
         return emojiMode;
     }
 
+    /**
+     * Sets the typeface in which the text should be displayed
+     */
+    @Override
+    public void setTypeface(final Typeface tf) {
+        if (paint == null)
+            paint = new TextPaint(getPaint());
+        paint.setTypeface(tf);
+        super.setTypeface(tf);
+    }
+
+    public void setMinTextSize(float minTextSize) {
+        this.minTextSize = minTextSize;
+        adjustTextSize();
+    }
+
+    public void setMaxTextSize(float maxTextSize) {
+        this.maxTextSize = maxTextSize;
+        adjustTextSize();
+    }
+
+    public boolean shouldClipBounds() {
+        return shouldClipBounds;
+    }
+
+    public void setShouldClipBounds(boolean shouldClipBounds) {
+        this.shouldClipBounds = shouldClipBounds;
+    }
+
+    public boolean shouldRotate() {
+        return shouldRotate;
+    }
+
+    public void shouldRotate(boolean shouldRotate) {
+        this.shouldRotate = shouldRotate;
+    }
+
+    public boolean shouldTranslate() {
+        return shouldTranslate;
+    }
+
+    public void setShouldTranslate(boolean shouldTranslate) {
+        this.shouldTranslate = shouldTranslate;
+    }
+
+    public boolean shouldResize() {
+        return shouldResize;
+    }
+
+    public void shouldResize(boolean shouldResize) {
+        this.shouldResize = shouldResize;
+    }
 }

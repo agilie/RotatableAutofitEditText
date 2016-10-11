@@ -4,11 +4,11 @@ Extended EditText which allows to move, rotate and resize text at the same time
 
 - <b>Gradle</b>
 
-    Coming soon
+compile 'com.agilie:rotatable-autofit-edittext:1.1'
 
 ## Requirements
 
-Android 2.3+ (API level 9+)
+Android 3.0+ (API level 11+)
 
 ## Author
 
