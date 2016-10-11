@@ -12,7 +12,7 @@ compile 'com.agilie:rotatable-autofit-edittext:1.1'
 ```
 
 ## How to use
-```java
+```xml
 <com.agilie.RotatableAutofitEditText xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:autofit="http://schemas.android.com/apk/res-auto"
     android:id="@+id/autoResizeEditText"
