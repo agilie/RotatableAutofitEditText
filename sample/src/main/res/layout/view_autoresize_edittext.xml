@@ -9,10 +9,10 @@
     android:padding="16dp"
     android:textColor="@android:color/white"
     android:textColorHint="@android:color/darker_gray"
+    autofit:clipBounds="true"
     autofit:maxTextSize="@dimen/autoresize_max_text_size"
     autofit:minTextSize="@dimen/autoresize_min_text_size"
-    autofit:rotatable="true"
-    autofit:resizable="true"
+    autofit:minWidth="@dimen/autoresize_min_width"
     autofit:movable="true"
-    autofit:clipBounds="true"
-    autofit:minWidth="@dimen/autoresize_min_width" />
+    autofit:resizable="true"
+    autofit:rotatable="true" />

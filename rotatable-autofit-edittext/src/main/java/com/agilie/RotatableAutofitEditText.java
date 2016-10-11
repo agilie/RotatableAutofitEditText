@@ -130,6 +130,7 @@ public class RotatableAutofitEditText extends EditText {
 
         setFocusable(true);
         setFocusableInTouchMode(true);
+        setTextIsSelectable(true);
         setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
         addSelfRemovableTextWatcher();
