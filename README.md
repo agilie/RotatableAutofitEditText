@@ -1,5 +1,8 @@
 Extended EditText which allows to move, rotate and resize text at the same time
 
+## Sample Screen Recording
+![Screenshot1](http://i.imgur.com/gwBiu3E.gif)
+
 ## Download
 
 - <b>Gradle</b>
