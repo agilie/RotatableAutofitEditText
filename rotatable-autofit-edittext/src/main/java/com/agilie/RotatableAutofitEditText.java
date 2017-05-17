@@ -56,11 +56,12 @@ public class RotatableAutofitEditText extends AppCompatEditText {
     private boolean isMoving = false;
     private boolean emojiMode = false;
     private boolean isHorizontal = true;
-
+    private boolean isCursorVisible = false;
     private boolean shouldClipBounds;
     private boolean shouldRotate;
     private boolean shouldTranslate;
     private boolean shouldResize;
+    private boolean isDefaultTypeface = true;
     private OnMoveListener onMoveListener;
     private OnEditTextActivateListener onEditTextActivateListener;
     private OnAdjustEmojiSizeListener onAdjustEmojiSizeListener;
@@ -138,6 +139,12 @@ public class RotatableAutofitEditText extends AppCompatEditText {
     }
 
     @Override
+    public void setCursorVisible(boolean visible) {
+        isCursorVisible = visible;
+//        super.setCursorVisible(visible);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         setInsertionDisabled();
 
@@ -199,10 +206,17 @@ public class RotatableAutofitEditText extends AppCompatEditText {
 
             case MotionEvent.ACTION_UP:
                 boolean isEditTextMoved = Math.abs(startX - getTranslationX()) > 25 || Math.abs(startY - getTranslationY()) > 25 || !moveMode;
-                setTextIsSelectable(isEditTextMoved);
-                setFocusable(!isEditTextMoved);
-                setClickable(!isEditTextMoved);
-                setFocusableInTouchMode(!isEditTextMoved);
+                if (isCursorVisible) {
+                    setTextIsSelectable(true);
+                    setFocusable(true);
+                    setClickable(true);
+                    setFocusableInTouchMode(!isEditTextMoved);
+                } else {
+                    setTextIsSelectable(isEditTextMoved);
+                    setFocusable(!isEditTextMoved);
+                    setClickable(!isEditTextMoved);
+                    setFocusableInTouchMode(!isEditTextMoved);
+                }
 
                 if (onMoveListener != null) {
                     onMoveListener.onFinishMoving(this, event);
@@ -235,10 +249,19 @@ public class RotatableAutofitEditText extends AppCompatEditText {
      */
     private void adjustTextSize() {
         final int startSize = (int) minTextSize;
-        final int heightLimit = ((int) (getHeight() * scaleFactor))
-                - getCompoundPaddingBottom() - getCompoundPaddingTop();
-        maxWidth = getMeasuredWidth() - getCompoundPaddingLeft()
-                - getCompoundPaddingRight();
+        int heightLimit;
+        if (isDefaultTypeface) {
+            heightLimit = getMeasuredHeight()
+                    - getCompoundPaddingBottom() - getCompoundPaddingTop();
+            maxWidth = getMeasuredWidth() - getCompoundPaddingLeft()
+                    - getCompoundPaddingRight();
+        } else {
+            heightLimit = ((int) (getMeasuredHeight() * scaleFactor))
+                    - getCompoundPaddingBottom() - getCompoundPaddingTop();
+            maxWidth = getMeasuredWidth() - getCompoundPaddingLeft()
+                    - getCompoundPaddingRight();
+        }
+
         if (maxWidth <= 0) {
             return;
         }
@@ -441,6 +464,7 @@ public class RotatableAutofitEditText extends AppCompatEditText {
         if (paint == null) {
             paint = new TextPaint(getPaint());
         }
+        isDefaultTypeface = false;
         paint.setTypeface(tf);
         super.setTypeface(tf);
     }
