@@ -40,22 +40,18 @@ public class RotatableAutofitEditText extends EditText {
 
     private final SparseIntArray textCachedSizes = new SparseIntArray();
     private final SizeTester sizeTester;
-    private float maxTextSize;
-    private float minTextSize;
-    private int maxWidth;
-    private TextPaint paint;
-
     ScaleGestureDetector scaleDetector;
-    private float scaleFactor = 1.f;
     RotateGestureDetector rotateDetector;
-
     float startX;
     float startY;
     float deltaX;
     float deltaY;
-
     int startWidth;
-
+    private float maxTextSize;
+    private float minTextSize;
+    private int maxWidth;
+    private TextPaint paint;
+    private float scaleFactor = 1.f;
     private boolean moveMode = true;
     private boolean isMoving = false;
     private boolean emojiMode = false;
@@ -65,19 +61,9 @@ public class RotatableAutofitEditText extends EditText {
     private boolean shouldRotate;
     private boolean shouldTranslate;
     private boolean shouldResize;
-
-    private interface SizeTester {
-        /**
-         * AutoResizeEditText
-         *
-         * @param suggestedSize  Size of text to be tested
-         * @param availableSpace available space in which text must fit
-         * @return an integer < 0 if after applying {@code suggestedSize} to
-         * text, it takes less space than {@code availableSpace}, > 0
-         * otherwise
-         */
-        int onTestSize(int suggestedSize, RectF availableSpace);
-    }
+    private OnMoveListener onMoveListener;
+    private OnEditTextActivateListener onEditTextActivateListener;
+    private OnAdjustEmojiSizeListener onAdjustEmojiSizeListener;
 
     public RotatableAutofitEditText(final Context context) {
         this(context, null, 0);
@@ -123,8 +109,11 @@ public class RotatableAutofitEditText extends EditText {
                 textRect.right = paint.measureText(text);
                 textRect.offsetTo(0, 0);
 
-                if (availableSPace.contains(textRect)) return -1;
-                else return 1;
+                if (availableSPace.contains(textRect)) {
+                    return -1;
+                } else {
+                    return 1;
+                }
             }
         };
 
@@ -173,8 +162,9 @@ public class RotatableAutofitEditText extends EditText {
             case MotionEvent.ACTION_POINTER_DOWN:
                 if (moveMode) {
                     startWidth = getWidth();
-                    if (onMoveListener != null)
+                    if (onMoveListener != null) {
                         onMoveListener.onFinishMoving(this, event);
+                    }
                     moveMode = false;
                     isMoving = false;
                 }
@@ -225,54 +215,6 @@ public class RotatableAutofitEditText extends EditText {
         return emojiMode || super.onTouchEvent(event);
     }
 
-    /**
-     * Performs changes on pinch
-     */
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            if (!shouldResize) return true;
-
-            scaleFactor *= detector.getScaleFactor();
-
-            scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 2.0f));
-
-            if (!moveMode) {
-                float x = getTranslationX();
-                float y = getTranslationY();
-
-                int newWidth = (int) (startWidth * scaleFactor);
-                if (newWidth > getMinimumWidth() && newWidth < ((View) getParent()).getWidth()) {
-                    ViewGroup.LayoutParams params = getLayoutParams();
-                    params.width = newWidth;
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    setLayoutParams(params);
-                }
-                setTranslationX(x);
-                setTranslationY(y);
-
-                invalidate();
-            }
-
-            return true;
-        }
-    }
-
-    /**
-     * Performs changes on rotation
-     */
-    private class RotateListener extends RotateGestureDetector.SimpleOnRotateGestureListener {
-
-        @Override
-        public boolean onRotate(RotateGestureDetector detector) {
-            if (!moveMode && shouldRotate) {
-                setRotation(getRotation() - detector.getRotationDegreesDelta());
-            }
-            return false;
-        }
-    }
-
     @Override
     protected void onTextChanged(final CharSequence text, final int start, final int before, final int after) {
         super.onTextChanged(text, start, before, after);
@@ -283,8 +225,9 @@ public class RotatableAutofitEditText extends EditText {
     protected void onSizeChanged(final int width, final int height, final int oldwidth, final int oldheight) {
         textCachedSizes.clear();
         super.onSizeChanged(width, height, oldwidth, oldheight);
-        if (width != oldwidth || height != oldheight)
+        if (width != oldwidth || height != oldheight) {
             adjustTextSize();
+        }
     }
 
     /**
@@ -296,8 +239,9 @@ public class RotatableAutofitEditText extends EditText {
                 - getCompoundPaddingBottom() - getCompoundPaddingTop();
         maxWidth = getMeasuredWidth() - getCompoundPaddingLeft()
                 - getCompoundPaddingRight();
-        if (maxWidth <= 0)
+        if (maxWidth <= 0) {
             return;
+        }
 
         if (emojiMode && onAdjustEmojiSizeListener != null) {
             onAdjustEmojiSizeListener.onAdjustEmojiSize(getText(), getLayoutParams().width - getPaddingRight() - getPaddingLeft());
@@ -323,15 +267,16 @@ public class RotatableAutofitEditText extends EditText {
 
         final int key = text.length();
         int size = textCachedSizes.get(key);
-        if (size != 0)
+        if (size != 0) {
             return size;
+        }
         size = binarySearch(start, end, sizeTester, availableSpace);
         textCachedSizes.put(key, size);
         return size;
     }
 
     /**
-     *  Calculates best text size for current EditText size
+     * Calculates best text size for current EditText size
      */
     private int binarySearch(final int start, final int end, final SizeTester sizeTester, final RectF availableSpace) {
         int lastBest = start;
@@ -347,8 +292,9 @@ public class RotatableAutofitEditText extends EditText {
             } else if (midValCmp > 0) {
                 high = middle - 1;
                 lastBest = high;
-            } else
+            } else {
                 return middle;
+            }
         }
         return lastBest;
     }
@@ -401,7 +347,9 @@ public class RotatableAutofitEditText extends EditText {
      * Check if current EditText is within parent container
      */
     private boolean isInBounds(float translationX, float translationY) {
-        if (getParent() == null || !shouldClipBounds) return true;
+        if (getParent() == null || !shouldClipBounds) {
+            return true;
+        }
 
         View parent = (View) getParent();
 
@@ -430,7 +378,9 @@ public class RotatableAutofitEditText extends EditText {
      * when it reached the horizontal limits of parent view
      */
     private boolean canMoveVertically(float translationY) {
-        if (getParent() == null) return true;
+        if (getParent() == null) {
+            return true;
+        }
         View parent = (View) getParent();
 
         if (isHorizontal) {
@@ -448,7 +398,9 @@ public class RotatableAutofitEditText extends EditText {
      * when it reached the vertical limits of parent view
      */
     private boolean canMoveHorizontally(float translationX) {
-        if (getParent() == null) return true;
+        if (getParent() == null) {
+            return true;
+        }
         View parent = (View) getParent();
 
         if (isHorizontal) {
@@ -461,55 +413,24 @@ public class RotatableAutofitEditText extends EditText {
         }
     }
 
-    /**
-     * OnMoveListener
-     */
-    public interface OnMoveListener {
-        void onStartMoving();
-
-        void onFinishMoving(RotatableAutofitEditText autofitEditText, MotionEvent event);
-    }
-
-    private OnMoveListener onMoveListener;
-
     public void setOnMoveListener(OnMoveListener listener) {
         onMoveListener = listener;
     }
-
-    /**
-     * OnEditTextActivateListener
-     */
-    public interface OnEditTextActivateListener {
-        void onEditTextActivated(RotatableAutofitEditText autofitEditText);
-    }
-
-    private OnEditTextActivateListener onEditTextActivateListener;
 
     public void setOnactivateListener(OnEditTextActivateListener listener) {
         onEditTextActivateListener = listener;
     }
 
-    /**
-     * OnAdjustEmojiSizeListener
-     */
-    public interface OnAdjustEmojiSizeListener {
-        void onAdjustEmojiSize(Spannable text, int size);
-    }
-
-    private OnAdjustEmojiSizeListener onAdjustEmojiSizeListener;
-
     public void setOnAdjustEmojiSizeListener(OnAdjustEmojiSizeListener onAdjustEmojiSizeListener) {
         this.onAdjustEmojiSizeListener = onAdjustEmojiSizeListener;
     }
 
-    /* Getters & Setters */
+    public boolean isEmojiMode() {
+        return emojiMode;
+    }
 
     public void setEmojiMode(boolean emojiMode) {
         this.emojiMode = emojiMode;
-    }
-
-    public boolean isEmojiMode() {
-        return emojiMode;
     }
 
     /**
@@ -517,8 +438,9 @@ public class RotatableAutofitEditText extends EditText {
      */
     @Override
     public void setTypeface(final Typeface tf) {
-        if (paint == null)
+        if (paint == null) {
             paint = new TextPaint(getPaint());
+        }
         paint.setTypeface(tf);
         super.setTypeface(tf);
     }
@@ -536,6 +458,8 @@ public class RotatableAutofitEditText extends EditText {
     public boolean shouldClipBounds() {
         return shouldClipBounds;
     }
+
+    /* Getters & Setters */
 
     public void setShouldClipBounds(boolean shouldClipBounds) {
         this.shouldClipBounds = shouldClipBounds;
@@ -563,5 +487,91 @@ public class RotatableAutofitEditText extends EditText {
 
     public void shouldResize(boolean shouldResize) {
         this.shouldResize = shouldResize;
+    }
+
+    private interface SizeTester {
+        /**
+         * AutoResizeEditText
+         *
+         * @param suggestedSize  Size of text to be tested
+         * @param availableSpace available space in which text must fit
+         * @return an integer < 0 if after applying {@code suggestedSize} to
+         * text, it takes less space than {@code availableSpace}, > 0
+         * otherwise
+         */
+        int onTestSize(int suggestedSize, RectF availableSpace);
+    }
+
+    /**
+     * OnMoveListener
+     */
+    public interface OnMoveListener {
+        void onStartMoving();
+
+        void onFinishMoving(RotatableAutofitEditText autofitEditText, MotionEvent event);
+    }
+
+    /**
+     * OnEditTextActivateListener
+     */
+    public interface OnEditTextActivateListener {
+        void onEditTextActivated(RotatableAutofitEditText autofitEditText);
+    }
+
+    /**
+     * OnAdjustEmojiSizeListener
+     */
+    public interface OnAdjustEmojiSizeListener {
+        void onAdjustEmojiSize(Spannable text, int size);
+    }
+
+    /**
+     * Performs changes on pinch
+     */
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            if (!shouldResize) {
+                return true;
+            }
+
+            scaleFactor *= detector.getScaleFactor();
+
+            scaleFactor = Math.max(0.5f, Math.min(scaleFactor, 2.0f));
+
+            if (!moveMode) {
+                float x = getTranslationX();
+                float y = getTranslationY();
+
+                int newWidth = (int) (startWidth * scaleFactor);
+                if (newWidth > getMinimumWidth() && newWidth < ((View) getParent()).getWidth()) {
+                    ViewGroup.LayoutParams params = getLayoutParams();
+                    params.width = newWidth;
+                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    setLayoutParams(params);
+                }
+                setTranslationX(x);
+                setTranslationY(y);
+
+                invalidate();
+            }
+
+            return true;
+        }
+    }
+
+    /**
+     * Performs changes on rotation
+     */
+    private class RotateListener extends RotateGestureDetector.SimpleOnRotateGestureListener {
+
+        @Override
+        public boolean onRotate(RotateGestureDetector detector) {
+            if (!moveMode && shouldRotate) {
+                setRotation(getRotation() - detector.getRotationDegreesDelta());
+            }
+            return false;
+        }
     }
 }
