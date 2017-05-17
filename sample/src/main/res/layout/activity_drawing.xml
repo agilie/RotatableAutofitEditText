@@ -14,4 +14,20 @@
         android:layout_alignParentBottom="true"
         android:text="Add text" />
 
+    <Button
+        android:id="@+id/addInsomniaRegularTextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/addTextButton"
+        android:layout_alignParentBottom="true"
+        android:text="Add text" />
+
+    <Button
+        android:id="@+id/addDroidRobotTextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/addInsomniaRegularTextButton"
+        android:layout_alignParentBottom="true"
+        android:text="Add text" />
+
 </RelativeLayout>

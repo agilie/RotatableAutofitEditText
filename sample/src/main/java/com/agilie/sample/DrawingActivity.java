@@ -1,6 +1,7 @@
 package com.agilie.sample;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 public class DrawingActivity extends AppCompatActivity {
 
     private Button addTextButton;
+    private Button addInsomniaRegularTextButton;
+    private Button addDroidRobotTextButton;
     private RelativeLayout container;
     private ArrayList<RotatableAutofitEditText> editTexts = new ArrayList<>();
 
@@ -26,18 +29,50 @@ public class DrawingActivity extends AppCompatActivity {
 
         container = (RelativeLayout) findViewById(R.id.container);
         addTextButton = (Button) findViewById(R.id.addTextButton);
+        addInsomniaRegularTextButton = (Button) findViewById(R.id.addInsomniaRegularTextButton);
+        addDroidRobotTextButton = (Button) findViewById(R.id.addDroidRobotTextButton);
+
 
         addTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RotatableAutofitEditText newEditText = (RotatableAutofitEditText) LayoutInflater.from(DrawingActivity.this).inflate(R.layout.view_autoresize_edittext, container, false);
-                container.addView(newEditText);
-                newEditText.requestLayout();
-                editTexts.add(newEditText);
-                showSoftKeyboard(newEditText);
+               addTextButton();
             }
         });
 
+        addInsomniaRegularTextButton.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/android_insomnia_regular.ttf"));
+        addInsomniaRegularTextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTextButton(Typeface.createFromAsset(getAssets(), "fonts/android_insomnia_regular.ttf"));
+            }
+        });
+
+        addDroidRobotTextButton.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/doridrobot.ttf"));
+        addDroidRobotTextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTextButton(Typeface.createFromAsset(getAssets(), "fonts/doridrobot.ttf"));
+            }
+        });
+
+    }
+
+    private void addTextButton(Typeface typeface) {
+        RotatableAutofitEditText newEditText = (RotatableAutofitEditText) LayoutInflater.from(DrawingActivity.this).inflate(R.layout.view_autoresize_edittext, container, false);
+        container.addView(newEditText);
+        newEditText.requestLayout();
+        newEditText.setTypeface(typeface);
+        editTexts.add(newEditText);
+        showSoftKeyboard(newEditText);
+    }
+
+    private void addTextButton() {
+        RotatableAutofitEditText newEditText = (RotatableAutofitEditText) LayoutInflater.from(DrawingActivity.this).inflate(R.layout.view_autoresize_edittext, container, false);
+        container.addView(newEditText);
+        newEditText.requestLayout();
+        editTexts.add(newEditText);
+        showSoftKeyboard(newEditText);
     }
 
     private void showSoftKeyboard(View view) {
