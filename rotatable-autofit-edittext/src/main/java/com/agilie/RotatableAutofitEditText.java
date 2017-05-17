@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Spannable;
@@ -19,7 +20,6 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.agilie.gesturedetectors.RotateGestureDetector;
@@ -33,7 +33,7 @@ import static android.R.attr.minWidth;
  * Allows to scale and rotate text using multitouch.
  * Text size also scaling automatically when EditText is resizing.
  */
-public class RotatableAutofitEditText extends EditText {
+public class RotatableAutofitEditText extends AppCompatEditText {
 
     private static float DEFAULT_MIN_TEXT_SIZE = 12f;
     private static int DEFAULT_MIN_WIDTH = 800;
@@ -235,7 +235,7 @@ public class RotatableAutofitEditText extends EditText {
      */
     private void adjustTextSize() {
         final int startSize = (int) minTextSize;
-        final int heightLimit = getMeasuredHeight()
+        final int heightLimit = ((int) (getHeight() * scaleFactor))
                 - getCompoundPaddingBottom() - getCompoundPaddingTop();
         maxWidth = getMeasuredWidth() - getCompoundPaddingLeft()
                 - getCompoundPaddingRight();
