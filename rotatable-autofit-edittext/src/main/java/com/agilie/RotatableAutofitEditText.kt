@@ -6,12 +6,7 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.os.Build
 import android.support.v7.widget.AppCompatEditText
-import android.text.Editable
-import android.text.InputType
-import android.text.Spannable
-import android.text.TextPaint
-import android.text.TextUtils
-import android.text.TextWatcher
+import android.text.*
 import android.util.AttributeSet
 import android.util.SparseIntArray
 import android.util.TypedValue
@@ -20,7 +15,6 @@ import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-
 import com.agilie.gesturedetectors.RotateGestureDetector
 
 
@@ -53,7 +47,6 @@ class RotatableAutofitEditText : AppCompatEditText {
     private var shouldRotate: Boolean = false
     private var shouldTranslate: Boolean = false
     private var shouldResize: Boolean = false
-    private var isDefaultTypeface = true
     private var onMoveListener: OnMoveListener? = null
     private var onEditTextActivateListener: OnEditTextActivateListener? = null
     private var onAdjustEmojiSizeListener: OnAdjustEmojiSizeListener? = null
@@ -78,8 +71,7 @@ class RotatableAutofitEditText : AppCompatEditText {
             internal val textRect = RectF()
 
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-            override fun onTestSize(suggestedSize: Int,
-                                    availableSPace: RectF): Int {
+            override fun onTestSize(suggestedSize: Int, availableSpace: RectF): Int {
                 paintGlobal!!.textSize = suggestedSize.toFloat()
 
                 val text: String
@@ -93,7 +85,7 @@ class RotatableAutofitEditText : AppCompatEditText {
                 textRect.right = paintGlobal!!.measureText(text)
                 textRect.offsetTo(0f, 0f)
 
-                if (availableSPace.contains(textRect)) {
+                if (availableSpace.contains(textRect)) {
                     return -1
                 } else {
                     return 1
@@ -224,18 +216,10 @@ class RotatableAutofitEditText : AppCompatEditText {
      */
     private fun adjustTextSize() {
         val startSize = minTextSize.toInt()
-        val heightLimit: Int
-        if (isDefaultTypeface) {
-            heightLimit = measuredHeight
-            -compoundPaddingBottom - compoundPaddingTop
-            maxWidthGlobal = measuredWidth - compoundPaddingLeft
-            -compoundPaddingRight
-        } else {
-            heightLimit = (measuredHeight * scaleFactor).toInt()
-            -compoundPaddingBottom - compoundPaddingTop
-            maxWidthGlobal = measuredWidth - compoundPaddingLeft
-            -compoundPaddingRight
-        }
+        val heightLimit = (measuredHeight * scaleFactor).toInt()
+        -compoundPaddingBottom - compoundPaddingTop
+        maxWidthGlobal = measuredWidth - compoundPaddingLeft
+        -compoundPaddingRight
 
         if (maxWidthGlobal <= 0) {
             return
@@ -248,7 +232,6 @@ class RotatableAutofitEditText : AppCompatEditText {
         super.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 efficientTextSizeSearch(startSize, maxTextSize.toInt(),
                         sizeTester, RectF(0f, 0f, maxWidthGlobal.toFloat(), heightLimit.toFloat())).toFloat())
-
     }
 
     /**
@@ -420,11 +403,10 @@ class RotatableAutofitEditText : AppCompatEditText {
     /**
      * Sets the typeface in which the text should be displayed
      */
-    override fun setTypeface(tf: Typeface) {
+    override fun setTypeface(tf: Typeface?) {
         if (paintGlobal == null) {
-            paintGlobal = TextPaint(getPaint())
+            paintGlobal = TextPaint(paint)
         }
-        isDefaultTypeface = false
         paintGlobal!!.typeface = tf
         super.setTypeface(tf)
     }
