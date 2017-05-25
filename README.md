@@ -8,7 +8,7 @@ Extended EditText which allows to move, rotate and resize text at the same time
 
 - <b>Gradle</b>
 ```java
-compile 'com.agilie:rotatable-autofit-edittext:1.1'
+compile 'com.agilie:rotatable-autofit-edittext:1.2'
 ```
 
 ## How to use
