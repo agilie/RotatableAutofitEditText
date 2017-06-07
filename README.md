@@ -49,8 +49,8 @@ Android 3.0+ (API level 11+)
 
 ## Author
 
-Agilie info@agilie.com
+This library is open-sourced by [Agilie Team](https://www.agilie.com) <info@agilie.com>
 
 ## License
 
-Available under the MIT License. See the LICENSE.md file for more info.
+The [MIT](LICENSE.md) License (MIT) Copyright © 2017 [Agilie Team](https://www.agilie.com)
