@@ -1,7 +1,7 @@
 ## RotatableAutofitEditText
-Extended EditText which allows to move, rotate and resize text at the same time
 
-## Sample Screen Recording
+[ ![Download](https://api.bintray.com/packages/agilie/maven/RotatableAutofitEditText/images/download.svg) ](https://bintray.com/agilie/maven/RotatableAutofitEditText/_latestVersion)
+
 ![Screenshot1](http://i.imgur.com/gwBiu3E.gif)
 
 ## Download
