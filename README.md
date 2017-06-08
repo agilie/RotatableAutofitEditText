@@ -47,6 +47,9 @@ autofit:clipBounds - true if EditText must not move out of parent view bounds
 
 Android 3.0+ (API level 11+)
 
+Problems? Check the [Issues](https://github.com/agilie/RotatableAutofitEditText/issues) block
+to find the solution or create an new issue that we will fix asap. 
+
 ## Author
 
 This library is open-sourced by [Agilie Team](https://www.agilie.com) <info@agilie.com>
