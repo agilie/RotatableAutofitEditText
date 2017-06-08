@@ -20,3 +20,4 @@
 gradlew.bat
 gradle/
 rotatable-autofit-edittext/bintray.gradle
+/.idea/
