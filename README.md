@@ -51,6 +51,15 @@ Android 3.0+ (API level 11+)
 
 This library is open-sourced by [Agilie Team](https://www.agilie.com) <info@agilie.com>
 
+## Contributors
+
+- [Denis Bogoslovcev](https://github.com/anonymous265)
+- [Roman Kapshuk](https://github.com/RomanKapshuk)
+
+## Contact us
+
+<android@agilie.com>
+
 ## License
 
 The [MIT](LICENSE.md) License (MIT) Copyright © 2017 [Agilie Team](https://www.agilie.com)
