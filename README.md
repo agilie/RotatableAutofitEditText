@@ -60,8 +60,9 @@ This library is open-sourced by [Agilie Team](https://www.agilie.com) <info@agil
 - [Roman Kapshuk](https://github.com/RomanKapshuk)
 
 ## Contact us
-
-<android@agilie.com>
+If you have any questions, suggestions or just need a help with web or mobile development, please email us at<br/> <android@agilie.com><br/>
+You can ask us anything from basic to complex questions. <br/>
+We will continue publishing new open-source projects. Stay with us, more updates will follow!<br/>
 
 ## License
 
