@@ -4,14 +4,34 @@
 
 ![Screenshot1](http://i.imgur.com/gwBiu3E.gif)
 
-## Download
+## What is RotatableAutofitEditText?
 
-- <b>Gradle</b>
-```java
+RotatableAutofitEditText is a lightweight open-source library that allows user to move, rotate, and resize text field at the same time. If you need such functionality in your project, we're happy to save some time for you so you can drink more beer with your friends :)
+
+# Usage
+
+### Gradle
+
+Add dependency in your `build.gradle` file:
+````gradle
 compile 'com.agilie:rotatable-autofit-edittext:1.2'
-```
+````
+
+### Maven
+Add rependency in your `.pom` file:
+````xml
+<dependency>
+  <groupId>com.agilie</groupId>
+  <artifactId>rotatable-autofit-edittext</artifactId>
+  <version>1.2</version>
+  <type>pom</type>
+</dependency>
+````
 
 ## How to use
+
+You can use *RotatableAutofitEditText* instead of familiar to all Android devs [EditText] component programmatically and in your *xml* files:
+
 ```xml
 <com.agilie.RotatableAutofitEditText xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:autofit="http://schemas.android.com/apk/res-auto"
@@ -33,19 +53,25 @@ compile 'com.agilie:rotatable-autofit-edittext:1.2'
     autofit:rotatable="true" />
 ```
 
+Here's a list of available properties, feel free to customize them according to your wishes and requirements:
+
 ```java
-autofit:maxTextSize - sets maximum text size
-autofit:minTextSize - sets minimum text size 
-autofit:minWidth - sets minimum EditText width
-autofit:movable - true if EditText must move in parent view
-autofit:resizable - true if EditText can be resized with pinch
-autofit:rotatable - true if EditText can be rotated
-autofit:clipBounds - true if EditText must not move out of parent view bounds
+    autofit:maxTextSize     // sets maximum text size
+    autofit:minTextSize     // sets minimum text size 
+    autofit:minWidth        // sets minimum EditText width
+    autofit:movable         // true if EditText must move in parent view
+    autofit:resizable       // true if EditText can be resized with pinch
+    autofit:rotatable       // true if EditText can be rotated
+    autofit:clipBounds      // true if EditText must not move out of parent view bounds
 ```
+
+Library also supports usage of different [Typefaces](https://developer.android.com/reference/android/graphics/Typeface.html) as well.
 
 ## Requirements
 
 Android 3.0+ (API level 11+)
+
+## Troubleshooting
 
 Problems? Check the [Issues](https://github.com/agilie/RotatableAutofitEditText/issues) block
 to find the solution or create an new issue that we will fix asap. 
