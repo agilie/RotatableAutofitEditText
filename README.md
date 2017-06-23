@@ -30,10 +30,11 @@ Add rependency in your `.pom` file:
 
 ## How to use
 
-You can use *RotatableAutofitEditText* instead of familiar to all Android devs [EditText] component programmatically and in your *xml* files:
+Simply use *RotatableAutofitEditText* instead of familiar to all Android devs [EditText](https://developer.android.com/reference/android/widget/EditText.html) component programmatically or in your *xml* files:
 
 ```xml
-<com.agilie.RotatableAutofitEditText xmlns:android="http://schemas.android.com/apk/res/android"
+<com.agilie.RotatableAutofitEditText 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:autofit="http://schemas.android.com/apk/res-auto"
     android:id="@+id/autoResizeEditText"
     android:layout_width="wrap_content"
@@ -56,16 +57,18 @@ You can use *RotatableAutofitEditText* instead of familiar to all Android devs [
 Here's a list of available properties, feel free to customize them according to your wishes and requirements:
 
 ```java
-    autofit:maxTextSize     // sets maximum text size
-    autofit:minTextSize     // sets minimum text size 
-    autofit:minWidth        // sets minimum EditText width
-    autofit:movable         // true if EditText must move in parent view
-    autofit:resizable       // true if EditText can be resized with pinch
-    autofit:rotatable       // true if EditText can be rotated
-    autofit:clipBounds      // true if EditText must not move out of parent view bounds
+    maxTextSize     // sets maximum text size
+    minTextSize     // sets minimum text size 
+    minWidth        // sets minimum EditText width
+    movable         // true if EditText must move in parent view
+    resizable       // true if EditText can be resized with pinch
+    rotatable       // true if EditText can be rotated
+    clipBounds      // true if EditText must not move out of parent view bounds
 ```
 
 Library also supports usage of different [Typefaces](https://developer.android.com/reference/android/graphics/Typeface.html) as well.
+
+Also you can clone this project and compile [sample](sample/) module to test our library in action. 
 
 ## Requirements
 
